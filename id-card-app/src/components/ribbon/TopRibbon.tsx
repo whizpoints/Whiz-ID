@@ -3,7 +3,7 @@ import { Save, FolderOpen, FilePlus, Download, Copy, Scissors, ClipboardPaste, B
 
 export function TopRibbon() {
   return (
-    <div className="h-28 bg-slate-800 border-b border-slate-700 flex flex-col flex-shrink-0">
+    <div className="h-32 bg-slate-800 border-b border-slate-700 flex flex-col flex-shrink-0">
       <Tabs defaultValue="home" className="w-full flex flex-col h-full">
         <TabsList className="flex bg-slate-900 border-b border-slate-700 px-2 pt-2 gap-1">
           <TabsTrigger value="file" className="px-4 py-1.5 rounded-t-lg text-sm text-slate-400 data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:border-t data-[state=active]:border-x data-[state=active]:border-slate-700">File</TabsTrigger>
