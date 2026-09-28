@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --color-slate-900: #0F172A;
+  --color-slate-800: #1E293B;
+  --color-slate-700: #334155;
+  --color-slate-200: #E2E8F0;
+
+  --color-blue-500: #3B82F6;
+  --color-emerald-500: #10B981;
+  --color-rose-500: #EF4444;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background-color: var(--color-slate-900);
+  color: white;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.drag-region {
+  -webkit-app-region: drag;
+}
+.no-drag-region {
+  -webkit-app-region: no-drag;
+}
