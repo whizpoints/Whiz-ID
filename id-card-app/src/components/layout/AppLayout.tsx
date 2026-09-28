@@ -50,18 +50,19 @@ export function AppLayout({ activeViewport, setActiveViewport }: AppLayoutProps)
 
       {/* Main Content Area */}
       <div className="flex-1 h-full relative overflow-hidden bg-slate-900">
-        <div className={cn("absolute inset-0 transition-opacity", activeViewport === 'studio' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')}>
-          <TemplateStudio />
-        </div>
-        <div className={cn("absolute inset-0 transition-opacity", activeViewport === 'data' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')}>
-          <DataManager />
-        </div>
-        <div className={cn("absolute inset-0 transition-opacity", activeViewport === 'spooler' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')}>
-          <PrintSpooler />
-        </div>
-        <div className={cn("absolute inset-0 transition-opacity", activeViewport === 'settings' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')}>
-          <SettingsView />
-        </div>
+        {/* We use standard mounting conditionally to prevent crazy re-render loops in hidden tabs during startup */}
+        {activeViewport === 'studio' && (
+          <div className="absolute inset-0 z-10"><TemplateStudio /></div>
+        )}
+        {activeViewport === 'data' && (
+          <div className="absolute inset-0 z-10"><DataManager /></div>
+        )}
+        {activeViewport === 'spooler' && (
+          <div className="absolute inset-0 z-10"><PrintSpooler /></div>
+        )}
+        {activeViewport === 'settings' && (
+          <div className="absolute inset-0 z-10"><SettingsView /></div>
+        )}
       </div>
     </div>
   );

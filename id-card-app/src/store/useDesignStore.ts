@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 export type NodeType = 'text' | 'image' | 'shape' | 'barcode' | 'qr';
 
@@ -53,9 +52,12 @@ interface DesignState {
   cardHeight: number; // in mm
 
   // View State (preserved when switching tabs)
+  activeTool: ToolType;
+
+  // We add these back since they were missing, which caused typescript failure, but keep persist off
+  // as requested earlier since it triggered bugs. We use Zustand's memory to keep it between tab swaps.
   stageScale: number;
   stagePos: { x: number, y: number };
-  activeTool: ToolType;
 
   // Actions
   addNode: (node: DesignNode) => void;
@@ -63,50 +65,34 @@ interface DesignState {
   deleteNode: (id: string) => void;
   selectNode: (id: string | null) => void;
   setCardDimensions: (width: number, height: number) => void;
+  setActiveTool: (tool: ToolType) => void;
   setStageScale: (scale: number) => void;
   setStagePos: (pos: { x: number, y: number }) => void;
-  setActiveTool: (tool: ToolType) => void;
 }
 
-export const useDesignStore = create<DesignState>()(
-  persist(
-    (set) => ({
-      nodes: [],
-      selectedNodeId: null,
-      cardWidth: 85.60,
-      cardHeight: 53.98,
+export const useDesignStore = create<DesignState>((set) => ({
+  nodes: [],
+  selectedNodeId: null,
+  cardWidth: 85.60,
+  cardHeight: 53.98,
 
-      stageScale: 0, // 0 indicates uninitialized
-      stagePos: { x: 0, y: 0 },
-      activeTool: 'select',
+  activeTool: 'select',
+  stageScale: 0,
+  stagePos: { x: 0, y: 0 },
 
-      addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),
-      updateNode: (id, updates) =>
-        set((state) => ({
-          nodes: state.nodes.map((n) => (n.id === id ? { ...n, ...updates } as DesignNode : n)),
-        })),
-      deleteNode: (id) =>
-        set((state) => ({
-          nodes: state.nodes.filter((n) => n.id !== id),
-          selectedNodeId: state.selectedNodeId === id ? null : state.selectedNodeId,
-        })),
-      selectNode: (id) => set({ selectedNodeId: id }),
-      setCardDimensions: (width, height) => set({ cardWidth: width, cardHeight: height }),
-
-      setStageScale: (scale) => set({ stageScale: scale }),
-      setStagePos: (pos) => set({ stagePos: pos }),
-      setActiveTool: (tool) => set({ activeTool: tool }),
-    }),
-    {
-      name: 'design-storage',
-      // We don't want to persist stageScale/Pos between app restarts necessarily, but we want it between tabs.
-      // If we persist it in localstorage, it will stay across restarts which is fine per requirements ("don't reset unless i closed the app").
-      // Wait, "unless I closed the app" means we SHOULD NOT persist `stageScale` and `stagePos` in localStorage, only in memory!
-      partialize: (state) => ({
-        nodes: state.nodes,
-        cardWidth: state.cardWidth,
-        cardHeight: state.cardHeight,
-      }),
-    }
-  )
-);
+  addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),
+  updateNode: (id, updates) =>
+    set((state) => ({
+      nodes: state.nodes.map((n) => (n.id === id ? { ...n, ...updates } as DesignNode : n)),
+    })),
+  deleteNode: (id) =>
+    set((state) => ({
+      nodes: state.nodes.filter((n) => n.id !== id),
+      selectedNodeId: state.selectedNodeId === id ? null : state.selectedNodeId,
+    })),
+  selectNode: (id) => set({ selectedNodeId: id }),
+  setCardDimensions: (width, height) => set({ cardWidth: width, cardHeight: height }),
+  setActiveTool: (tool) => set({ activeTool: tool }),
+  setStageScale: (scale) => set({ stageScale: scale }),
+  setStagePos: (pos) => set({ stagePos: pos }),
+}));
