@@ -1,7 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-import { Save, FolderOpen, FilePlus, Download, Copy, Scissors, ClipboardPaste, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { Save, FolderOpen, FilePlus, Download, Copy, Scissors, ClipboardPaste, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Type, Square, Image as ImageIcon, QrCode } from 'lucide-react';
+import { useDesignStore } from '@/store/useDesignStore';
 
 export function TopRibbon() {
+  const { setActiveTool } = useDesignStore();
+
   return (
     <div className="h-32 bg-slate-800 border-b border-slate-700 flex flex-col flex-shrink-0">
       <Tabs defaultValue="home" className="w-full flex flex-col h-full">
@@ -67,7 +70,12 @@ export function TopRibbon() {
           </TabsContent>
 
           <TabsContent value="insert" className="flex h-full items-center gap-4 outline-none">
-            <div className="text-sm text-slate-400">Insert tools coming soon</div>
+             <RibbonGroup title="Elements">
+              <RibbonButton icon={<Type size={20} />} label="Text Box" onClick={() => setActiveTool('text')} />
+              <RibbonButton icon={<ImageIcon size={20} />} label="Photo" onClick={() => setActiveTool('photo')} />
+              <RibbonButton icon={<Square size={20} />} label="Shape" onClick={() => setActiveTool('shape')} />
+              <RibbonButton icon={<QrCode size={20} />} label="Barcode" onClick={() => setActiveTool('barcode')} />
+            </RibbonGroup>
           </TabsContent>
           <TabsContent value="arrange" className="flex h-full items-center gap-4 outline-none">
             <div className="text-sm text-slate-400">Arrange tools coming soon</div>
@@ -94,9 +102,9 @@ function RibbonDivider() {
   return <div className="w-px h-12 bg-slate-700 mx-2" />;
 }
 
-function RibbonButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+function RibbonButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick?: () => void }) {
   return (
-    <button className="flex flex-col items-center justify-center p-2 rounded hover:bg-slate-700 text-slate-300 hover:text-slate-100 transition-colors w-16 h-14 gap-1">
+    <button onClick={onClick} className="flex flex-col items-center justify-center p-2 rounded hover:bg-slate-700 text-slate-300 hover:text-slate-100 transition-colors w-16 h-14 gap-1">
       {icon}
       <span className="text-[10px] whitespace-nowrap">{label}</span>
     </button>

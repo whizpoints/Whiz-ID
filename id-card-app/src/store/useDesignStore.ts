@@ -44,16 +44,28 @@ export interface ShapeNode extends NodeBase {
 
 export type DesignNode = TextNode | ImageNode | ShapeNode;
 
+export type ToolType = 'select' | 'text' | 'dynamic' | 'photo' | 'shape' | 'arrow' | 'barcode' | 'pan';
+
 interface DesignState {
   nodes: DesignNode[];
   selectedNodeId: string | null;
   cardWidth: number; // in mm
   cardHeight: number; // in mm
+
+  // View State (preserved when switching tabs)
+  stageScale: number;
+  stagePos: { x: number, y: number };
+  activeTool: ToolType;
+
+  // Actions
   addNode: (node: DesignNode) => void;
   updateNode: (id: string, updates: Partial<DesignNode>) => void;
   deleteNode: (id: string) => void;
   selectNode: (id: string | null) => void;
   setCardDimensions: (width: number, height: number) => void;
+  setStageScale: (scale: number) => void;
+  setStagePos: (pos: { x: number, y: number }) => void;
+  setActiveTool: (tool: ToolType) => void;
 }
 
 export const useDesignStore = create<DesignState>()(
@@ -63,6 +75,11 @@ export const useDesignStore = create<DesignState>()(
       selectedNodeId: null,
       cardWidth: 85.60,
       cardHeight: 53.98,
+
+      stageScale: 0, // 0 indicates uninitialized
+      stagePos: { x: 0, y: 0 },
+      activeTool: 'select',
+
       addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),
       updateNode: (id, updates) =>
         set((state) => ({
@@ -75,9 +92,21 @@ export const useDesignStore = create<DesignState>()(
         })),
       selectNode: (id) => set({ selectedNodeId: id }),
       setCardDimensions: (width, height) => set({ cardWidth: width, cardHeight: height }),
+
+      setStageScale: (scale) => set({ stageScale: scale }),
+      setStagePos: (pos) => set({ stagePos: pos }),
+      setActiveTool: (tool) => set({ activeTool: tool }),
     }),
     {
       name: 'design-storage',
+      // We don't want to persist stageScale/Pos between app restarts necessarily, but we want it between tabs.
+      // If we persist it in localstorage, it will stay across restarts which is fine per requirements ("don't reset unless i closed the app").
+      // Wait, "unless I closed the app" means we SHOULD NOT persist `stageScale` and `stagePos` in localStorage, only in memory!
+      partialize: (state) => ({
+        nodes: state.nodes,
+        cardWidth: state.cardWidth,
+        cardHeight: state.cardHeight,
+      }),
     }
   )
 );

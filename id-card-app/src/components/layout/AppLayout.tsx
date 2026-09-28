@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { TemplateStudio } from '../views/TemplateStudio';
 import { DataManager } from '../views/DataManager';
 import { PrintSpooler } from '../views/PrintSpooler';
+import { Settings as SettingsView } from '../views/Settings';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -49,10 +50,18 @@ export function AppLayout({ activeViewport, setActiveViewport }: AppLayoutProps)
 
       {/* Main Content Area */}
       <div className="flex-1 h-full relative overflow-hidden bg-slate-900">
-        {activeViewport === 'studio' && <div className="absolute inset-0"><TemplateStudio /></div>}
-        {activeViewport === 'data' && <div className="absolute inset-0"><DataManager /></div>}
-        {activeViewport === 'spooler' && <div className="absolute inset-0"><PrintSpooler /></div>}
-        {activeViewport === 'settings' && <div className="absolute inset-0 flex items-center justify-center">Settings Placeholder</div>}
+        <div className={cn("absolute inset-0 transition-opacity", activeViewport === 'studio' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')}>
+          <TemplateStudio />
+        </div>
+        <div className={cn("absolute inset-0 transition-opacity", activeViewport === 'data' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')}>
+          <DataManager />
+        </div>
+        <div className={cn("absolute inset-0 transition-opacity", activeViewport === 'spooler' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')}>
+          <PrintSpooler />
+        </div>
+        <div className={cn("absolute inset-0 transition-opacity", activeViewport === 'settings' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')}>
+          <SettingsView />
+        </div>
       </div>
     </div>
   );
