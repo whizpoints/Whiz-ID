@@ -102,10 +102,13 @@ export function DesignCanvas() {
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
-    const scaleBy = 1.05;
     const stage = e.target.getStage();
     if (!stage) return;
 
+    // If it's a pinch-to-zoom (ctrlKey) OR standard scrolling which user requested to act as zoom...
+    // Actually the user says: "when I try to move with two fingers, it zooms but when I do a scroll by doing a left click and presssing it then moving cursor up or down, nothing works"
+    // Trackpad scrolling sets deltaY.
+    const scaleBy = 1.05;
     const oldScale = stage.scaleX();
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
@@ -137,6 +140,79 @@ export function DesignCanvas() {
     }
   };
 
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastPanPos, setLastPanPos] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+    const evt = e.evt as MouseEvent;
+
+    // Middle click, right click, or space+left click for panning
+    if (evt.button === 1 || evt.button === 2 || (evt.button === 0 && e.target === e.target.getStage())) {
+      setIsPanning(true);
+      setLastPanPos({
+        x: evt.clientX || (evt as any).touches?.[0]?.clientX || 0,
+        y: evt.clientY || (evt as any).touches?.[0]?.clientY || 0
+      });
+      document.body.style.cursor = 'grabbing';
+      if (evt.button === 2) {
+        evt.preventDefault();
+      }
+    }
+  };
+
+  const handleMouseMove = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+    if (!isPanning) return;
+    const evt = e.evt as MouseEvent;
+    const clientX = evt.clientX || (evt as any).touches?.[0]?.clientX || 0;
+    const clientY = evt.clientY || (evt as any).touches?.[0]?.clientY || 0;
+
+    const dx = clientX - lastPanPos.x;
+    const dy = clientY - lastPanPos.y;
+
+    const newPos = {
+      x: (localPos?.x || 0) + dx,
+      y: (localPos?.y || 0) + dy
+    };
+
+    setLocalPos(newPos);
+    setLastPanPos({ x: clientX, y: clientY });
+  };
+
+  const handleMouseUp = () => {
+    if (isPanning) {
+      setIsPanning(false);
+      document.body.style.cursor = 'default';
+      syncToStore(localScale, localPos);
+    }
+  };
+
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isPanning) {
+        setIsPanning(false);
+        document.body.style.cursor = 'default';
+        syncToStore(localScale, localPos);
+      }
+    };
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, [isPanning, localScale, localPos]);
+
+  useEffect(() => {
+    const preventContext = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('contextmenu', preventContext);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener('contextmenu', preventContext);
+      }
+    };
+  }, []);
+
   const checkDeselect = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
     const clickedOnEmpty = e.target === e.target.getStage() || e.target.hasName('bg-rect');
     if (clickedOnEmpty) {
@@ -145,6 +221,9 @@ export function DesignCanvas() {
   };
 
   const handleStageClick = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+    const evt = e.evt as MouseEvent;
+    if (evt.button === 1 || evt.button === 2) return; // Prevent creating nodes on right/middle click
+
     checkDeselect(e);
 
     if (activeTool !== 'select' && activeTool !== 'pan') {
@@ -222,6 +301,7 @@ export function DesignCanvas() {
   };
 
   const getCursor = () => {
+    if (isPanning) return 'cursor-grabbing';
     if (activeTool === 'pan') return 'cursor-grab active:cursor-grabbing';
     if (activeTool !== 'select') return 'cursor-crosshair';
     return 'cursor-default';
@@ -248,6 +328,13 @@ export function DesignCanvas() {
         onWheel={handleWheel}
         onClick={handleStageClick}
         onTap={handleStageClick}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={() => handleMouseUp()}
+        onMouseLeave={() => handleMouseUp()}
+        onTouchStart={handleMouseDown}
+        onTouchMove={handleMouseMove}
+        onTouchEnd={() => handleMouseUp()}
         scaleX={localScale}
         scaleY={localScale}
         x={localPos?.x || 0}

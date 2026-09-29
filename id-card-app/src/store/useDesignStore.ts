@@ -68,6 +68,7 @@ interface DesignState {
   setActiveTool: (tool: ToolType) => void;
   setStageScale: (scale: number) => void;
   setStagePos: (pos: { x: number, y: number }) => void;
+  clearNodes: () => void;
 }
 
 export const useDesignStore = create<DesignState>((set) => ({
@@ -95,4 +96,5 @@ export const useDesignStore = create<DesignState>((set) => ({
   setActiveTool: (tool) => set({ activeTool: tool }),
   setStageScale: (scale) => set({ stageScale: scale }),
   setStagePos: (pos) => set({ stagePos: pos }),
+  clearNodes: () => set({ nodes: [], selectedNodeId: null }),
 }));

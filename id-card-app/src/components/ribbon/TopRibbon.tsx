@@ -3,7 +3,7 @@ import { Save, FolderOpen, FilePlus, Download, Copy, Scissors, ClipboardPaste, B
 import { useDesignStore } from '@/store/useDesignStore';
 
 export function TopRibbon() {
-  const { setActiveTool } = useDesignStore();
+  const { setActiveTool, clearNodes } = useDesignStore();
 
   return (
     <div className="h-32 bg-slate-800 border-b border-slate-700 flex flex-col flex-shrink-0">
@@ -19,7 +19,7 @@ export function TopRibbon() {
         <div className="flex-1 px-4 py-2 bg-slate-800">
           <TabsContent value="file" className="flex h-full items-center gap-4 outline-none">
             <RibbonGroup title="Project">
-              <RibbonButton icon={<FilePlus size={20} />} label="New" />
+              <RibbonButton icon={<FilePlus size={20} />} label="New" onClick={clearNodes} />
               <RibbonButton icon={<FolderOpen size={20} />} label="Open" />
               <RibbonButton icon={<Save size={20} />} label="Save" />
             </RibbonGroup>

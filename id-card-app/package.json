@@ -1,10 +1,10 @@
 {
-  "name": "id-card-app",
+  "name": "whizcard-studio",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.4.6",
   "main": "dist-electron/main.js",
-  "author": "Enterprise Studio",
-  "description": "ID Card Production Desktop App",
+  "author": "WhizPoint",
+  "description": "WhizCard Studio — ID Card Design & Production",
   "type": "module",
   "scripts": {
     "dev:vite": "vite",
@@ -18,22 +18,24 @@
     "preview": "vite preview"
   },
   "build": {
-    "appId": "com.enterprise.idcardstudio",
-    "productName": "ID Card Studio",
+    "appId": "com.whizpoint.whizcardstudio",
+    "productName": "WhizCard Studio",
+    "copyright": "© 2026 WhizPoint",
     "directories": {
       "output": "dist-app"
     },
     "win": {
       "target": "nsis",
-      "icon": "public/favicon.svg"
+      "icon": "public/favicon.ico",
+      "executableName": "WhizCardStudio"
     },
     "mac": {
       "target": "dmg",
-      "icon": "public/favicon.svg"
+      "icon": "public/favicon.png"
     },
     "linux": {
       "target": "AppImage",
-      "icon": "public/favicon.svg"
+      "icon": "public/favicon.png"
     },
     "files": [
       "dist/**/*",

@@ -228,7 +228,7 @@ export function DataManager() {
                 <div className="w-full aspect-[85.6/53.98] bg-slate-200 rounded-xl shadow-lg relative overflow-hidden flex flex-col">
                   {/* Fake Design */}
                   <div className="h-1/3 bg-blue-600 flex items-center px-4">
-                    <div className="text-white font-bold text-sm">Enterprise Co.</div>
+                    <div className="text-white font-bold text-sm">WhizPoint</div>
                   </div>
                   <div className="flex-1 flex p-3 gap-3 bg-white">
                     <div className="w-16 h-20 bg-slate-300 rounded border-2 border-white shadow-sm flex items-center justify-center text-slate-500 text-[10px]">
