@@ -2,11 +2,14 @@ import { useDesignStore } from '@/store/useDesignStore';
 import { Settings as SettingsIcon, AlertTriangle, Database, Printer, HardDrive, RefreshCcw } from 'lucide-react';
 
 export function Settings() {
-  const resetDesign = useDesignStore(state => () => {
-    state.setStageScale(0);
-    state.setStagePos({ x: 0, y: 0 });
+  const setStageScale = useDesignStore(state => state.setStageScale);
+  const setStagePos = useDesignStore(state => state.setStagePos);
+
+  const resetDesign = () => {
+    setStageScale(0);
+    setStagePos({ x: 0, y: 0 });
     // clear nodes could also be added here if desired
-  });
+  };
 
   return (
     <div className="flex h-full w-full bg-slate-900 text-slate-200">

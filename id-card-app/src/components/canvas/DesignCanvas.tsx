@@ -146,8 +146,11 @@ export function DesignCanvas() {
   const handleMouseDown = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
     const evt = e.evt as MouseEvent;
 
-    // Middle click, right click, or space+left click for panning
-    if (evt.button === 1 || evt.button === 2 || (evt.button === 0 && e.target === e.target.getStage())) {
+    // Middle click, right click, or empty canvas click when panning/selecting
+    // We only trigger left-click pan if activeTool is pan or select. If it's a drawing tool (text, shape),
+    // left-clicking should draw, NOT pan.
+    const canLeftClickPan = activeTool === 'pan' || activeTool === 'select';
+    if (evt.button === 1 || evt.button === 2 || (evt.button === 0 && e.target === e.target.getStage() && canLeftClickPan)) {
       setIsPanning(true);
       setLastPanPos({
         x: evt.clientX || (evt as any).touches?.[0]?.clientX || 0,
